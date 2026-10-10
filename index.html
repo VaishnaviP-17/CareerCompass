@@ -1,0 +1,221 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerCompass | Internship Tracker</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-layout">
+
+        <aside class="sidebar">
+            <a href="#" class="brand">
+                <span class="brand-icon">C</span>
+                <span>CareerCompass</span>
+            </a>
+
+            <p class="nav-heading">WORKSPACE</p>
+
+            <nav>
+                <a href="#dashboard" class="nav-link active">▦ &nbsp; Dashboard</a>
+                <a href="#applications" class="nav-link">▤ &nbsp; Applications</a>
+                <a href="#deadlines" class="nav-link">◷ &nbsp; Deadlines</a>
+                <a href="#preparation" class="nav-link">✓ &nbsp; Preparation</a>
+            </nav>
+
+            <div class="sidebar-note">
+                <span class="note-icon">✦</span>
+                <h3>Your next opportunity</h3>
+                <p>Every application is a step toward your career.</p>
+            </div>
+
+            <p class="sidebar-footer">CAREERCOMPASS · V1.0</p>
+        </aside>
+
+        <main class="main-content" id="dashboard">
+
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">YOUR CAREER WORKSPACE</p>
+                    <h1>Internship Dashboard</h1>
+                    <p class="muted">Stay organised. Prepare smarter. Move forward.</p>
+                </div>
+                <div class="profile">
+                    <span class="profile-avatar">V</span>
+                    <div>
+                        <strong>My Workspace</strong>
+                        <p class="muted">Aspiring AI &amp; ML Engineer</p>
+                    </div>
+                </div>
+            </header>
+
+            <section class="welcome-banner">
+                <div>
+                    <p class="eyebrow">YOUR JOURNEY STARTS HERE</p>
+                    <h2>Build your future, one application at a time.</h2>
+                    <p>Track opportunities and keep your preparation on course.</p>
+                    <a href="#add-application" class="primary-link">+ Add an application</a>
+                </div>
+                <div class="banner-decoration" aria-hidden="true">✦</div>
+            </section>
+
+            <section class="stats-grid" aria-label="Application statistics">
+                <article class="stat-card">
+                    <p>Total applications</p>
+                    <h2 id="stat-total">0</h2>
+                    <span class="stat-caption">All tracked opportunities</span>
+                </article>
+
+                <article class="stat-card">
+                    <p>Applied</p>
+                    <h2 id="stat-applied">0</h2>
+                    <span class="stat-caption">Applications submitted</span>
+                </article>
+
+                <article class="stat-card">
+                    <p>Interviews</p>
+                    <h2 id="stat-interview">0</h2>
+                    <span class="stat-caption">Opportunities to prepare for</span>
+                </article>
+
+                <article class="stat-card">
+                    <p>Offers</p>
+                    <h2 id="stat-offer">0</h2>
+                    <span class="stat-caption">Positive outcomes</span>
+                </article>
+            </section>
+
+            <section class="panel" id="add-application">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">GROW YOUR OPPORTUNITIES</p>
+                        <h2>Add an application</h2>
+                    </div>
+                </div>
+
+                <form id="app-form" class="application-form">
+                    <div class="form-field">
+                        <label for="company">Company</label>
+                        <input type="text" id="company" placeholder="e.g. Infosys" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="role">Job role</label>
+                        <input type="text" id="role" placeholder="e.g. AI Intern" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="deadline">Application deadline</label>
+                        <input type="date" id="deadline" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="status">Status</label>
+                        <select id="status">
+                            <option>Wishlist</option>
+                            <option>Applied</option>
+                            <option>Interview</option>
+                            <option>Offer</option>
+                            <option>Rejected</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="primary-button">+ Add application</button>
+                </form>
+            </section>
+
+            <section class="panel" id="applications">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">YOUR OPPORTUNITIES</p>
+                        <h2>Applications</h2>
+                        <p class="muted">Review and update your tracked applications.</p>
+                    </div>
+                    <span id="application-count" class="count-badge">0 applications</span>
+                </div>
+                
+                <div class="search-controls">
+                    <div class="form-field">
+                        <label for="search-input">Search applications</label>
+                    <input
+                    type="search"
+                    id="search-input"
+                    placeholder="Search company or job role..."
+        >
+                </div>
+
+    <div class="form-field">
+        <label for="status-filter">Filter by status</label>
+        <select id="status-filter">
+            <option value="All">All statuses</option>
+            <option value="Wishlist">Wishlist</option>
+            <option value="Applied">Applied</option>
+            <option value="Interview">Interview</option>
+            <option value="Offer">Offer</option>
+            <option value="Rejected">Rejected</option>
+        </select>
+    </div>
+</div>
+
+
+                <div id="app-list" class="application-list"></div>
+                <p id="empty-state" class="empty-state">
+                    No applications yet. Add your first opportunity above!
+                </p>
+            </section>
+
+            <section class="panel" id="deadlines">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">DON'T MISS AN OPPORTUNITY</p>
+                        <h2>Upcoming deadlines</h2>
+                    </div>
+                </div>
+                <div id="deadline-list" class="deadline-list"></div>
+            </section>
+
+            <section class="panel" id="preparation">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">GET INTERVIEW-READY</p>
+                        <h2>Preparation checklist</h2>
+                        <p class="muted">Your checklist is saved in this browser.</p>
+                    </div>
+                </div>
+
+                <div class="checklist">
+                    <label class="check-item">
+                        <input type="checkbox" data-task="resume">
+                        <span>Review and update my resume</span>
+                    </label>
+                    <label class="check-item">
+                        <input type="checkbox" data-task="aptitude">
+                        <span>Practise aptitude questions</span>
+                    </label>
+                    <label class="check-item">
+                        <input type="checkbox" data-task="coding">
+                        <span>Practise coding problems</span>
+                    </label>
+                    <label class="check-item">
+                        <input type="checkbox" data-task="interview">
+                        <span>Prepare interview introductions and answers</span>
+                    </label>
+                    <label class="check-item">
+                        <input type="checkbox" data-task="company">
+                        <span>Research the company and job description</span>
+                    </label>
+                </div>
+                <p id="checklist-progress" class="muted">0 of 5 tasks completed</p>
+            </section>
+
+            <footer class="page-footer">
+                CareerCompass · Your career journey, organised.
+            </footer>
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
