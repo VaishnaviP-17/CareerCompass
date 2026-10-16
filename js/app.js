@@ -1,7 +1,7 @@
 
 const STORAGE_KEY = "applications";
 const CHECKLIST_KEY = "careerCompassChecklist";
-
+const API_BASE_URL = "http://127.0.0.1:8000";
 let applications = JSON.parse(
     localStorage.getItem(STORAGE_KEY) || "[]"
 );
@@ -23,6 +23,20 @@ const statuses = [
 ];
 
 // Save applications without changing the existing storage key.
+async function loadApplications() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/applications`);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error: ${response.status}`);
+        }
+
+        applications = await response.json();
+        render();
+    } catch (error) {
+        console.error("Failed to load applications:", error);
+    }
+}
 function save() {
     localStorage.setItem(
         STORAGE_KEY,
@@ -329,32 +343,65 @@ function createApplicationCard(app, index) {
 
     editButton.type = "button";
 
-    editButton.addEventListener("click", () => {
-        const nextStatus = window.prompt(
-            "Enter the new status:\n" + statuses.join(", "),
-            app.status
+    
+editButton.addEventListener("click", async () => {
+    const nextStatus = window.prompt(
+        "Enter the new status:\n" + statuses.join(", "),
+        app.status
+    );
+
+    if (nextStatus === null) {
+        return;
+    }
+
+    const matchedStatus = statuses.find(
+        (status) =>
+            status.toLowerCase() === nextStatus.trim().toLowerCase()
+    );
+
+    if (!matchedStatus) {
+        window.alert(
+            "Invalid status. Choose: " + statuses.join(", ")
+        );
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            `${API_BASE_URL}/applications/${app.id}`,
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    company: app.company,
+                    role: app.role,
+                    status: matchedStatus,
+                    deadline: app.deadline
+                })
+            }
         );
 
-        if (nextStatus === null) {
-            return;
+        if (!response.ok) {
+            throw new Error(`Request failed: ${response.status}`);
         }
 
-        const matchedStatus = statuses.find(
-            (status) =>
-                status.toLowerCase() === nextStatus.trim().toLowerCase()
-        );
+        const updatedApplication = await response.json();
 
-        if (!matchedStatus) {
-            window.alert(
-                "Invalid status. Choose: " + statuses.join(", ")
-            );
-            return;
-        }
-
-        applications[index].status = matchedStatus;
+        applications[index] = updatedApplication;
         save();
         render();
-    });
+
+        window.alert("Application status updated successfully!");
+    } catch (error) {
+        console.error("Failed to update application:", error);
+        window.alert(
+            "Could not update the status. Please check the backend and try again."
+        );
+    }
+});
+
 
     // Delete only after confirmation.
     const deleteButton = makeElement(
@@ -365,20 +412,41 @@ function createApplicationCard(app, index) {
 
     deleteButton.type = "button";
 
-    deleteButton.addEventListener("click", () => {
-        const confirmed = window.confirm(
-            "Delete the application for " + app.company + "?"
+    
+deleteButton.addEventListener("click", async () => {
+    const confirmed = window.confirm(
+        "Delete the application for " + app.company + "?"
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            `${API_BASE_URL}/applications/${app.id}`,
+            {
+                method: "DELETE"
+            }
         );
 
-        if (!confirmed) {
-            return;
+        if (!response.ok) {
+            throw new Error(`Request failed: ${response.status}`);
         }
 
         applications.splice(index, 1);
         save();
         render();
-    });
-    
+
+        window.alert("Application deleted successfully!");
+    } catch (error) {
+        console.error("Failed to delete application:", error);
+        window.alert(
+            "Could not delete the application. Please check the backend and try again."
+        );
+    }
+});
+
 const prepareButton = makeElement(
     "button",
     "secondary-button",
@@ -582,8 +650,9 @@ function render() {
 }
 
 
-// Add a new application.
-form.addEventListener("submit", (event) => {
+
+ // Add a new application through the FastAPI backend.
+form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const company = document.getElementById("company").value.trim();
@@ -596,32 +665,40 @@ form.addEventListener("submit", (event) => {
         return;
     }
 
-    applications.push({
-        company,
-        role,
-        deadline,
-        status
-    });
-
-    save();
-    render();
-    form.reset();
-});
-
-// Highlight the currently selected navigation section.
-document.querySelectorAll(".nav-link").forEach((link) => {
-    link.addEventListener("click", () => {
-        document.querySelectorAll(".nav-link").forEach((item) => {
-            item.classList.remove("active");
+    try {
+        const response = await fetch(`${API_BASE_URL}/applications`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                company,
+                role,
+                status,
+                deadline
+            })
         });
 
-        link.classList.add("active");
-    });
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(
+                errorData.detail || `Request failed: ${response.status}`
+            );
+        }
+
+        const newApplication = await response.json();
+
+        applications.push(newApplication);
+        save();
+        render();
+        form.reset();
+
+        window.alert("Application saved successfully!");
+    } catch (error) {
+        console.error("Failed to save application:", error);
+        window.alert(
+            "Could not save the application to the backend. Please check that the server is running."
+        );
+    }
 });
-
-searchInput.addEventListener("input", render);
-statusFilter.addEventListener("change", render);
-
-// Start the application.
-setupChecklist();
-render();
+loadApplications();
